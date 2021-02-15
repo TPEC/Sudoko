@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.TypedValue;
+import android.widget.ProgressBar;
 
 import java.util.Arrays;
 
@@ -33,6 +34,7 @@ public class GameDB {
     public boolean[] wrong;
     public int[] showAnswerColor;
     public boolean finished;
+    public long game_finish_ts;
 
     public int selX, selY, selI;
 
@@ -94,7 +96,7 @@ public class GameDB {
         game_cnt = sp.getLong("no", 1);
         finished = sp.getBoolean("fin", true);
         if (finished) {
-            newGame(0);
+            newGame(0, null);
         } else {
             sp = context.getSharedPreferences("save", Activity.MODE_PRIVATE);
             String s;
@@ -169,11 +171,7 @@ public class GameDB {
         editor.apply();
     }
 
-    public void newGame(int level) {
-//        SudokoFactory sudokoFactory = new SudokoFactory();
-//        answer = sudokoFactory.create();
-//        question_mask = sudokoFactory.mask(Math.abs(RANDOM.nextInt()) % 9 + 27);
-
+    public void newGame(int level, ProgressBar pb) {
         user_answer_saved = null;
         uap_saved = null;
         SharedPreferences.Editor editor = context.getSharedPreferences("answer_saved", Activity.MODE_PRIVATE).edit();
@@ -297,6 +295,7 @@ public class GameDB {
             }
         }
         finished = true;
+        game_finish_ts = System.currentTimeMillis();
         game_cnt++;
         for (int i = 0; i < 81; i++) {
             if (question_mask[i] == 0) {

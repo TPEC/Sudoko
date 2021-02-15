@@ -8,6 +8,8 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.dc.sudoko.TWidget.TButton;
@@ -219,7 +221,9 @@ public class SceneMain {
                                 }
                             }
                         }
-                        gameDB.judge();
+                        if (gameDB.judge()) {
+
+                        }
                         return true;
                     }
                 }
@@ -255,8 +259,18 @@ public class SceneMain {
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        gameDB.newGame(level);
-                                        tsv.drawSV();
+                                        NewGameProgressBar pb = new NewGameProgressBar(tsv.getContext());
+                                        pb.setLevel(level);
+                                        final AlertDialog ad = new AlertDialog.Builder(tsv.getContext()).setTitle("Loading...").setView(pb).setCancelable(false).create();
+                                        pb.setOnFinishListener(new NewGameProgressBar.OnFinishListener() {
+                                            @Override
+                                            public void onFinish() {
+                                                tsv.drawSV();
+                                                ad.dismiss();
+                                            }
+                                        });
+                                        pb.start();
+                                        ad.show();
                                     }
                                 })
                                 .setNegativeButton("No", null)

@@ -11,6 +11,10 @@ import android.view.SurfaceView;
 
 import com.dc.sudoko.TWidget.TLabel;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * Created by XIeQian on 2016/12/23.
  */
@@ -18,6 +22,8 @@ import com.dc.sudoko.TWidget.TLabel;
 class TSV extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private static final float SIZE_WIDTH = 720;
     private static final float SIZE_HEIGHT = 1280;
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm", Locale.CHINA);
 
     public enum SceneStateEnum {sseMain}
 
@@ -31,6 +37,7 @@ class TSV extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private boolean scaleToWidth;
     private float scaleRate, scaleTrans;
     private TLabel tlTest;
+    private TLabel tlTime;
 
     private SceneMain sceneMain;
 
@@ -51,6 +58,10 @@ class TSV extends SurfaceView implements SurfaceHolder.Callback, Runnable {
         tlTest = new TLabel(0, 0, 720, 72);
         tlTest.setTextSize(30);
         tlTest.setTextColor(Color.WHITE);
+
+        tlTime = new TLabel(600, 0, 120, 72);
+        tlTime.setTextSize(36);
+        tlTime.setTextColor(Color.WHITE);
 
         gameDB = GameDB.getInstance();
         gameDB.load(getContext());
@@ -74,8 +85,14 @@ class TSV extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
                 sceneMain.draw(canvas);
 
-                tlTest.setText("No." + gameDB.game_cnt + "    \tTime:" + (System.currentTimeMillis() - gameDB.game_start_ts) / 1000 + "\tD:" + gameDB.difficulty);
+                String sb = "No." + gameDB.game_cnt + "    \t" +
+                        "Time:" + ((gameDB.finished ? gameDB.game_finish_ts - gameDB.game_start_ts : System.currentTimeMillis() - gameDB.game_start_ts) / 1000) + "s    \t" +
+                        "D:" + gameDB.difficulty;
+                tlTest.setText(sb);
                 tlTest.drawLabel(canvas);
+
+                tlTime.setText(DATE_FORMAT.format(new Date()));
+                tlTime.drawLabel(canvas);
 
 //                Paint p2=new Paint();
 //                p2.setColor(Color.RED);
